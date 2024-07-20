@@ -18,36 +18,38 @@ const createRoom = async (req, res) => {
 };
 
 const sendMessage = async (req, res) => {
-    const {roomId, userId, text } = req.body;
+    const { roomId, user, text } = req.body;
     try {
-        const room = await Room.findById(roomId);
-        if(!room){
+        const room = await Room.findOne({ roomId: roomId });
+        console.log(room);
+        if (!room) {
             return res.status(404).json({ message: "Room not found" });
         }
         const newMessage = {
-            userId,
+            user,
             text,
             createdAt: new Date(),
         };
         room.messages.push(newMessage);
         await room.save();
-        res.json(newMessage);
+        res.json({ room: room, msg: newMessage });
     } catch (error) {
         res.status(500).json({ message: "sendMessage error : " + error.message });
     }
 };
 
 const getMessages = async (req, res) => {
-    const {roomId} = req.params;
+    const { roomId } = req.params;
     try {
-        const room = await Room.findById(roomId);
-        if(!room){
+        const room = await Room.findOne({ roomId: roomId });
+        if (!room) {
             return res.status(404).json({ message: "Room not found" });
         }
-        res.json(room.messages);
+        res.status(201).json({ messages: room.messages });
+        // res.json(room.messages);
     } catch (error) {
         res.status(500).json({ message: "getMessage error : " + error.message });
     }
 };
 
-module.exports = { createRoom , sendMessage };
+module.exports = { createRoom, sendMessage, getMessages };
