@@ -3,16 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import './JoinRoom.css';
 import loginImg from '../assets/login.png';
 import { useAuth } from '../store/auth';
-import { toast } from'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function Login() {
 
     const [user, setUser] = useState({
+        username: '',
         email: '',
         password: ''
     });
     const navigate = useNavigate();
-    const { storeTokenInLS } = useAuth();
+    const { storeTokenInLS, storeUserInLS } = useAuth();
 
     const handleInput = (e) => {
         const { name, value } = e.target;
@@ -39,7 +40,9 @@ export default function Login() {
             if (response.ok) {
                 toast.success('Login Successful !');
                 storeTokenInLS(responseData.token);
-                setUser({ email: "", password: "" });
+                console.log(responseData);
+                storeUserInLS(responseData.user);
+                setUser({ email: "", username: "", password: "" });
                 navigate('/room'); // Redirect to dashboard or desired page after login
             } else {
                 toast.error("Login failed: " + responseData.message);
@@ -67,6 +70,16 @@ export default function Login() {
                         required
                         autoComplete='off'
                         value={user.email}
+                        onChange={handleInput}
+                    />
+                    <input
+                        type="username"
+                        name='username'
+                        placeholder="Username"
+                        id='username'
+                        required
+                        autoComplete='off'
+                        value={user.username}
                         onChange={handleInput}
                     />
                     <input

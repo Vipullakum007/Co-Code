@@ -15,7 +15,7 @@ const register = async (req, res) => {
             username, email, password
         });
         res.status(201).json({
-            message: 'User registered successfully', token: await userCreated.generateToken(), userId: userCreated._id.toString()
+            message: 'User registered successfully', token: await userCreated.generateToken(), user: userCreated, userId: userCreated._id.toString()
         });
     } catch (error) {
         console.log(error.message);
@@ -35,7 +35,7 @@ const login = async (req, res) => {
 
         console.log(user);
         if (user) {
-            res.status(200).json({ message: 'User logged in successfully', token: await userExists.generateToken(), userId: userExists._id.toString() });
+            res.status(200).json({ message: 'User logged in successfully', token: await userExists.generateToken(), user: userExists, userId: userExists._id.toString() });
         }
         else {
             res.status(401).json({ message: 'Invalid credentials' });

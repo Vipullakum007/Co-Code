@@ -18,21 +18,43 @@ const createRoom = async (req, res) => {
 };
 
 const sendMessage = async (req, res) => {
-    const { roomId, user, text } = req.body;
+    const { roomId, username, text } = req.body;
     try {
-        const room = await Room.findOne({ roomId: roomId });
-        console.log(room);
+        const newMessage = {
+            username: username,
+            text: text,
+            timestamp: new Date(),
+        };
+
+        const room = await Room.findOneAndUpdate(
+            { roomId },
+            { $push: { messages: newMessage } },
+            { new: true }
+        );
         if (!room) {
             return res.status(404).json({ message: "Room not found" });
         }
-        const newMessage = {
-            user,
-            text,
-            createdAt: new Date(),
-        };
-        room.messages.push(newMessage);
-        await room.save();
+
         res.json({ room: room, msg: newMessage });
+        // console.log(room);
+        // if (!room) {
+        //     return res.status(404).json({ message: "Room not found" });
+        // }
+        // const newMessage = {
+        //     username: username,
+        //     text: text,
+        //     createdAt: new Date(),
+        // };
+        // console.log("sending..");
+        // room.messages.push(newMessage);
+        // try {
+        //     await room.save();
+        //     console.log("sent..");
+        //     res.json({ room: room, msg: newMessage });
+        // } catch (saveError) {
+        //     console.error("Error saving the room:", saveError);
+        //     res.status(500).json({ message: "Error saving the room: " + saveError.message });
+        // }
     } catch (error) {
         res.status(500).json({ message: "sendMessage error : " + error.message });
     }
