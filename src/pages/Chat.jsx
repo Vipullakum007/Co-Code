@@ -4,70 +4,59 @@ import './FeaturesPage.css';
 import { LuSendHorizonal } from "react-icons/lu";
 import { useAuth } from '../store/auth';
 
-const socket = io('http://localhost:5000'); // Adjust the URL as needed
+const socket = io('http://localhost:5000');
 
 const Chat = ({ roomId }) => {
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState({
+        username: '',
+        text: ''
+    });
     const { user } = useAuth();
     const [text, setText] = useState('');
-    // const [newMessages, setNewMessages] = useState({
-    //     username: '',
-    //     text: '',
-    // });
-    useEffect(() => {
-        socket.emit('joinRoom', { roomId });
+    const [messageReceived, setMessageReceived] = useState("");
+    socket.on("receiveMessage", (data) => {
+        setMessageReceived(data.message);
+    })
 
-        socket.on('newMessage', (message) => {
-            setMessages((prevMessages) => [...prevMessages, message]);
-        });
 
-        return () => {
-            socket.off('newMessage');
-        };
-    }, [roomId]);
 
-    const sendMessage = async () => {
-        if (!user || !user.username) {
-            console.error('User is not logged in or username is missing');
-            return;
-        }
-        console.log("Sending..");
-        if (text.trim()) {
-            console.log("Text:", text);
-            // console.log("user:", user.email);
-            // const response = await fetch('http://localhost:5000/api/room/message', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ roomId, user: user.username, text }),
-            // });
-            // const data = await response.json();
-            // console.log(data);
-            // setText('');
-            try {
-                console.log(user);
-                const response = await fetch('http://localhost:5000/api/room/message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // 'Authorization': { token }, // Add this line
-                    },
-                    body: JSON.stringify({
-                        roomId,
-                        username: user.username,
-                        text,
-                    }),
-                });
-                const data = await response.json();
-                setMessages((prevMessages) => [...prevMessages, data.message]);
-                setText('');
-            } catch (error) {
-                console.error('Error sending message:', error);
-            }
-        }
+    const sendMessage =  () => {
+
+        const username = localStorage.getItem('username');
+
+
+        // if (text.trim()) {
+        //     console.log("Text:", text);
+        //     try {
+        //         console.log(user);
+        //         const response = await fetch('http://localhost:5000/api/room/message', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify({
+        //                 roomId: roomId,
+        //                 username: user.username,
+        //                 text: text,
+        //             }),
+        //         });
+        //         const data = await response.json();
+        //         console.log(data);
+        //         setMessages(data.msg);
+        //         setText('');
+        //     } catch (error) {
+        //         console.error('Error sending message:', error);
+        //     }
+
+        // }
+        socket.emit('sendMessage', { username: username, text: text });
+        
+
     };
-
+    socket.on('forwardMessage',(data)=> {  
+        socket.disconnect();
+        console.log(data)
+    })
     return (
         <div className="feature-content">
             <div className="chat-container">
@@ -75,11 +64,12 @@ const Chat = ({ roomId }) => {
                 <h3>{user.username}</h3>
                 <hr />
                 <div className="chat-block">
-                    {messages.map((msg, index) => (
-                        <div key={index}>
-                            <strong>{msg.user}:</strong> {msg.text}
-                        </div>
-                    ))}
+                    {/* {messages.map((msg, index) => ( */}
+                    {/* <div key={index}> */}
+                    {/* <strong>{messages.username}</strong> {messages.text} */}
+                    {messageReceived}
+                    {/* </div> */}
+                    {/* ))} */}
                 </div>
                 <div className="message-input">
                     <input

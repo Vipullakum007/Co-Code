@@ -15,20 +15,6 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-// const corsOptions = {
-//     origins: ['http://localhost:3000'],
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'],
-//     credentials: true,
-//     optionSuccessStatus: 200,
-// }
-
-// // Middleware to make io accessible in controllers
-// app.use((req, res, next) => {
-//     req.io = io;
-//     next();
-// });
-
-
 // Initialize socket.io server
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -38,22 +24,29 @@ const io = new Server(server, {
     },
 });
 
+// const username = localStorage.getItem('username');
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log( ' a user connected' , socket.id);
 
     socket.on('joinRoom', ({ roomId }) => {
         socket.join(roomId);
         console.log(`User joined room: ${roomId}`);
     });
 
-    socket.on('sendMessage', (message) => {
-        io.to(message.roomId).emit('receiveMessage', message);
-        console.log(`User ${message.senderId} sent message: ${message.content} in room: ${message.roomId}`);
+    // socket.on('sendMessage', (message) => {
+    //     console.log(message);
+    //     socket.to(message.roomId).broadcast('receiveMessage', message);
+    //     // console.log(`User ${message.senderId} sent message: ${message.content} in room: ${message.roomId}`);
+    // });
+
+    socket.on('sendMessage', (data) => {
+        console.log(data);
+        io.emit('forwardMessage',data)
     });
+    
 
 
-
-    socket.on('disconnect', () => {
+    socket.on('disconnection', () => {
         console.log('user disconnected');
     });
 });

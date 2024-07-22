@@ -13,7 +13,7 @@ export default function Login() {
         password: ''
     });
     const navigate = useNavigate();
-    const { storeTokenInLS, storeUserInLS } = useAuth();
+    const { storeTokenInLS } = useAuth();
 
     const handleInput = (e) => {
         const { name, value } = e.target;
@@ -33,19 +33,18 @@ export default function Login() {
                 body: JSON.stringify(user),
             });
 
-            console.log(response);
+            // console.log(response);
 
             const responseData = await response.json();
-            console.log(responseData);
             if (response.ok) {
+                console.log(responseData);
                 toast.success('Login Successful !');
                 storeTokenInLS(responseData.token);
-                console.log(responseData);
-                storeUserInLS(responseData.user);
+                localStorage.setItem("username", user.username);
                 setUser({ email: "", username: "", password: "" });
                 navigate('/room'); // Redirect to dashboard or desired page after login
             } else {
-                toast.error("Login failed: " + responseData.message);
+                toast.error("Login failed: ");
                 console.log("Login failed: " + responseData.message);
                 // Handle login failure (show error message, etc.)
             }

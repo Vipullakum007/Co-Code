@@ -14,10 +14,10 @@ export const AuthProvider = ({ children }) => {
       return localStorage.setItem("token", serverToken);
    };
 
-   const storeUserInLS = (userData) => {
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-   };
+   // const storeUsernameInLS = (userData) => {
+   //    setUser(userData.username);
+   //    localStorage.setItem("username", JSON.stringify(userData.username));
+   // };
 
    // lets tack logout functionality
    let isLoggedIn = !!token;
@@ -56,20 +56,20 @@ export const AuthProvider = ({ children }) => {
       }
 
    };
-   // useEffect(() => {
-   //    userAuthentication();
-   // }, []);
    useEffect(() => {
-      if (token) {
-         userAuthentication();
-      } else {
-         setIsLoading(false);
-      }
-   }, [token]);
+      userAuthentication();
+   }, []);
+   // useEffect(() => {
+   //    if (token) {
+   //       userAuthentication();
+   //    } else {
+   //       setIsLoading(false);
+   //    }
+   // }, [token]);
 
 
 
-   return <AuthContext.Provider value={{ isLoggedIn, storeTokenInLS, LogoutUser, user, storeUserInLS, authorizationToken, isLoading }}>
+   return <AuthContext.Provider value={{ isLoggedIn, storeTokenInLS, LogoutUser, user, authorizationToken, isLoading }}>
       {children}
    </AuthContext.Provider>
 };
