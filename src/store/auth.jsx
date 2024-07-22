@@ -14,19 +14,27 @@ export const AuthProvider = ({ children }) => {
       return localStorage.setItem("token", serverToken);
    };
 
+   // const storeUsernameInLS = (userData) => {
+   //    setUser(userData.username);
+   //    localStorage.setItem("username", JSON.stringify(userData.username));
+   // };
+
    // lets tack logout functionality
    let isLoggedIn = !!token;
    console.log("isLoggedIn = ", isLoggedIn);
 
    const LogoutUser = () => {
       setToken("");
-      return localStorage.removeItem("token");
+      setUser("");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
    };
 
    // JWT AUTHENTICATION - to get currently logged in user
    const userAuthentication = async () => {
       try {
          setIsLoading(true);
+         // console.log(authorizationToken);
          const response = await fetch("http://localhost:5000/api/auth/user", {
             method: "GET",
             headers: {
@@ -51,6 +59,13 @@ export const AuthProvider = ({ children }) => {
    useEffect(() => {
       userAuthentication();
    }, []);
+   // useEffect(() => {
+   //    if (token) {
+   //       userAuthentication();
+   //    } else {
+   //       setIsLoading(false);
+   //    }
+   // }, [token]);
 
 
 

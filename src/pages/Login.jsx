@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import './JoinRoom.css';
 import loginImg from '../assets/login.png';
 import { useAuth } from '../store/auth';
-import { toast } from'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function Login() {
 
     const [user, setUser] = useState({
+        username: '',
         email: '',
         password: ''
     });
@@ -32,17 +33,18 @@ export default function Login() {
                 body: JSON.stringify(user),
             });
 
-            console.log(response);
+            // console.log(response);
 
             const responseData = await response.json();
-            console.log(responseData);
             if (response.ok) {
+                console.log(responseData);
                 toast.success('Login Successful !');
                 storeTokenInLS(responseData.token);
-                setUser({ email: "", password: "" });
+                localStorage.setItem("username", user.username);
+                setUser({ email: "", username: "", password: "" });
                 navigate('/room'); // Redirect to dashboard or desired page after login
             } else {
-                toast.error("Login failed: " + responseData.message);
+                toast.error("Login failed: ");
                 console.log("Login failed: " + responseData.message);
                 // Handle login failure (show error message, etc.)
             }
@@ -67,6 +69,16 @@ export default function Login() {
                         required
                         autoComplete='off'
                         value={user.email}
+                        onChange={handleInput}
+                    />
+                    <input
+                        type="username"
+                        name='username'
+                        placeholder="Username"
+                        id='username'
+                        required
+                        autoComplete='off'
+                        value={user.username}
                         onChange={handleInput}
                     />
                     <input

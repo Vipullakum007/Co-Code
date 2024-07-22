@@ -6,14 +6,17 @@ import editor from '../assets/editor.png'; // Replace with your actual editor im
 import execution from '../assets/execution.png'; // Replace with your actual execution image
 import collaborator from '../assets/collaborators.png'; // Replace with your actual collaborator image
 import Card from '../components/card'; // Import the Card component
+import { useAuth } from '../store/auth';
 
 const Home = () => {
+    const {user} = useAuth();
     return (
         <div className="home">
             <header className="home-header">
                 <div className="header-content">
                     {/* <img src={heroImg} alt="Co-Code Logo" className="header-image" /> */}
                     <h1 className="header-title">Co-Code</h1>
+                    <h2>Welcome , {user.username}</h2>
                     <p className="header-subtitle">Code Chat and Collaborate, It's All in Sync</p>
                 </div>
             </header>
