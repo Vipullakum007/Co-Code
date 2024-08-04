@@ -36,25 +36,6 @@ const sendMessage = async (req, res) => {
         }
 
         res.json({ room: room, msg: newMessage });
-        // console.log(room);
-        // if (!room) {
-        //     return res.status(404).json({ message: "Room not found" });
-        // }
-        // const newMessage = {
-        //     username: username,
-        //     text: text,
-        //     createdAt: new Date(),
-        // };
-        // console.log("sending..");
-        // room.messages.push(newMessage);
-        // try {
-        //     await room.save();
-        //     console.log("sent..");
-        //     res.json({ room: room, msg: newMessage });
-        // } catch (saveError) {
-        //     console.error("Error saving the room:", saveError);
-        //     res.status(500).json({ message: "Error saving the room: " + saveError.message });
-        // }
     } catch (error) {
         res.status(500).json({ message: "sendMessage error : " + error.message });
     }

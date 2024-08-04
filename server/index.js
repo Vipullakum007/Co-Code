@@ -33,19 +33,11 @@ io.on('connection', (socket) => {
         console.log(`User joined room: ${roomId}`);
     });
 
-    // socket.on('sendMessage', (message) => {
-    //     console.log(message);
-    //     socket.to(message.roomId).broadcast('receiveMessage', message);
-    //     // console.log(`User ${message.senderId} sent message: ${message.content} in room: ${message.roomId}`);
-    // });
-
     socket.on('sendMessage', (data) => {
         console.log(data);
-        io.emit('forwardMessage',data)
+        io.emit('receiveMessage',data)
     });
     
-
-
     socket.on('disconnection', () => {
         console.log('user disconnected');
     });
