@@ -7,6 +7,7 @@ import { FcCollaboration } from "react-icons/fc";
 import { IoSettingsOutline } from "react-icons/io5";
 import { useAuth } from '../store/auth';
 import Chat from './Chat';
+import Editor from './Editor';
 
 const Features = () => {
     const [selectedFeature, setSelectedFeature] = useState('chat');
@@ -15,6 +16,7 @@ const Features = () => {
         switch (selectedFeature) {
             case 'editor':
                 return (
+                    // <Editor />
                     <div className="feature-content">
                         <div className="file-folder-info">
                             <h2>Files</h2>
@@ -23,11 +25,8 @@ const Features = () => {
                         </div>
                         <div className="editor">
 
-                            <h2>Editor</h2>
-                            <div className="editor-block">
-                                <h3>File and Folders</h3>
-                                <textarea placeholder="Write your code here..."></textarea>
-                            </div>
+                            <Editor />
+
                         </div>
                     </div>
                 );
@@ -53,11 +52,7 @@ const Features = () => {
                         </div>
                         <div className="editor">
 
-                            <h2>Editor</h2>
-                            <div className="editor-block">
-                                <h3>File and Folders</h3>
-                                <textarea placeholder="Write your code here..."></textarea>
-                            </div>
+                            <Editor />
                         </div>
                     </div>
                 );
@@ -100,11 +95,7 @@ const Features = () => {
 
                         <div className="editor">
 
-                            <h2>Editor</h2>
-                            <div className="editor-block">
-                                <h3>File and Folders</h3>
-                                <textarea placeholder="Write your code here..."></textarea>
-                            </div>
+                            <Editor />
                         </div>
                     </div>
                 );
@@ -122,11 +113,7 @@ const Features = () => {
                         </div>
                         <div className="editor">
 
-                            <h2>Editor</h2>
-                            <div className="editor-block">
-                                <h3>File and Folders</h3>
-                                <textarea placeholder="Write your code here..."></textarea>
-                            </div>
+                            <Editor />
                         </div>
                     </div>
                 );

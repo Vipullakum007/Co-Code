@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import './FeaturesPage.css';
 import { LuSendHorizonal } from "react-icons/lu";
 import { useAuth } from '../store/auth';
+import Editor from './Editor';
 
 const socket = io('http://localhost:5000');
 
@@ -79,11 +80,7 @@ const Chat = ({ roomId }) => {
             </div>
             <div className="editor">
 
-                <h2>Editor</h2>
-                <div className="editor-block">
-                    <h3>File and Folders</h3>
-                    <textarea placeholder="Write your code here..."></textarea>
-                </div>
+                <Editor />
             </div>
         </div>
     );
