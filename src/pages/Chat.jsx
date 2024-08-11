@@ -18,19 +18,36 @@ const Chat = ({ roomId }) => {
 
     const [messages, setMessages] = useState([]);
 
+    // useEffect(() => {
+    //     socket.on('receiveMessage', (data) => {
+    //         setMessages((prevMessages) => [...prevMessages, data]);
+    //     });
+
+    //     return () => {
+    //         socket.off('receiveMessage');
+    //     };
+    // }, []);
+
     useEffect(() => {
+        // Join the room
+        socket.emit('joinRoom', { roomId });
+
+        // Listen for messages from the room
         socket.on('receiveMessage', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
         });
 
         return () => {
+            // Leave the room and clean up listeners
+            socket.emit('leaveRoom', { roomId });
             socket.off('receiveMessage');
         };
-    }, []);
+    }, [roomId]);
 
     const sendMessage = () => {
+        console.log(roomId);
         const username = localStorage.getItem('username');
-        const message = { username: username, text: text };
+        const message = { username: username, text: text, roomId };
 
         socket.emit('sendMessage', message);
         setText('');

@@ -32,10 +32,13 @@ io.on('connection', (socket) => {
         socket.join(roomId);
         console.log(`User joined room: ${roomId}`);
     });
-
-    socket.on('sendMessage', (data) => {
-        console.log(data);
-        io.emit('receiveMessage',data)
+    socket.on('leaveRoom', ({ roomId }) => {
+        socket.leave(roomId);
+        console.log(`User left room: ${roomId}`);
+    });
+    socket.on('sendMessage', ({ username, text, roomId }) => {
+        console.log(username,text);
+        io.to(roomId).emit('receiveMessage',{username, text});
     });
     
     socket.on('disconnection', () => {
