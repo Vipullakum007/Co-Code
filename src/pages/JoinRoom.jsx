@@ -26,20 +26,21 @@ const JoinRoom = ({ image, heading }) => {
     };
 
     const handleJoin = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/section-auth', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ roomId, username })
-            });
-            const data = await response.json();
-            console.log('Joined room:', data);
-            navigate('/group-chat', { state: { roomId, username } });
-        } catch (error) {
-            console.error('Error joining room:', error);
-        }
+        // try {
+        //     const response = await fetch('http://localhost:5000/api/section-auth', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ roomId, username })
+        //     });
+        //     const data = await response.json();
+        //     console.log('Joined room:', data);
+        //     navigate('/features', { state: { roomId, username } });
+        // } catch (error) {
+        //     console.error('Error joining room:', error);
+        // }
+        navigate('/features', { state: { roomId, username } });
     };
 
     return (
@@ -54,7 +55,8 @@ const JoinRoom = ({ image, heading }) => {
                     <input
                         type="text"
                         placeholder="Join Room ID"
-                        value={roomId}
+                        // value={roomId}
+                        value="wKyOTE12pb02WGoiKyj69Pyu4muYaw"
                         onChange={(e) => setRoomId(e.target.value)}
                     />
                     <input
