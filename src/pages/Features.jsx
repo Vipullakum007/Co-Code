@@ -1,122 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './FeaturesPage.css';
 import { LuFiles } from "react-icons/lu";
 import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { VscRunAll } from "react-icons/vsc";
 import { FcCollaboration } from "react-icons/fc";
 import { IoSettingsOutline } from "react-icons/io5";
-import { useAuth } from '../store/auth';
+import { useLocation } from 'react-router-dom';
 import Chat from './Chat';
 import Editor from './Editor';
+import Files from './Files';
+import Runner from './Runner';
+import Collaborators from './Collaborators';
+import Settings from './Settings';
 
 const Features = () => {
     const [selectedFeature, setSelectedFeature] = useState('chat');
+    const [editorContent, setEditorContent] = useState('');
 
+    const handleFileUpload = (fileContent) => {
+        setEditorContent(fileContent);  // Updates the editor content when files are uploaded
+    };
+
+    const location = useLocation(); 
+    const { roomId } = location.state || {};
+
+    // Function to render feature content based on selection
     const renderFeatureContent = () => {
         switch (selectedFeature) {
             case 'editor':
-                return (
-                    // <Editor />
-                    <div className="feature-content">
-                        <div className="file-folder-info">
-                            <h2>Files</h2>
-                            <hr />
-                            {/* file and folder dynamically add here */}
-                        </div>
-                        <div className="editor">
-
-                            <Editor />
-
-                        </div>
-                    </div>
-                );
+                return <Files onFileUpload={handleFileUpload} />;
             case 'runner':
-                return (
-                    <div className="feature-content">
-                        <div className="runner-container">
-
-                            <h2>Runner</h2>
-                            <div className="runner-block">
-                                <h3>Select Language</h3>
-                                <select>
-                                    <option>JavaScript</option>
-                                    <option>Python</option>
-                                    <option>Java</option>
-                                    {/* Add more languages as needed */}
-                                </select>
-                                <h3>Input</h3>
-                                <textarea placeholder="Provide input..."></textarea>
-                                <h3>Output</h3>
-                                <textarea placeholder="Output will be displayed here..."></textarea>
-                            </div>
-                        </div>
-                        <div className="editor">
-
-                            <Editor />
-                        </div>
-                    </div>
-                );
+                return <Runner />;
             case 'chat':
-                const roomId = 'wKyOTE12pb02WGoiKyj69Pyu4muYaw';
-                // <Chat />
-                // break;
-                return (
-                    <Chat roomId={roomId} />
-                    // <div className="feature-content">
-                    //     <div className="chat-container">
-                    //         <h2>Group Chat</h2>
-                    //         <hr />
-                    //         <div className="chat-block">
-                    //             <Chat roomId={roomId} />
-                    //         </div>
-                    //     </div>
-
-                    //     <div className="editor">
-
-                    //         <h2>Editor</h2>
-                    //         <div className="editor-block">
-                    //             <h3>File and Folders</h3>
-                    //             <textarea placeholder="Write your code here..."></textarea>
-                    //         </div>
-                    //     </div>
-                    // </div>
-                );
+                return <Chat roomId={roomId} />;
             case 'collaborators':
-                return (
-                    <div className="feature-content">
-                        <div className="collaborator-container">
-
-                            <h2>Collaborators</h2>
-                            <hr />
-                            <div className="collaborators-block">
-                                {/* List of collaborators goes here */}
-                            </div>
-                        </div>
-
-                        <div className="editor">
-
-                            <Editor />
-                        </div>
-                    </div>
-                );
+                return <Collaborators />;
             case 'settings':
-                return (
-                    <div className="feature-content">
-                        <div className="settings-container">
-
-                            <h2>Settings</h2>
-                            <hr />
-                            <div className="settings-block">
-                                {/* Font and theme settings components go here */}
-
-                            </div>
-                        </div>
-                        <div className="editor">
-
-                            <Editor />
-                        </div>
-                    </div>
-                );
+                return <Settings />;
             default:
                 return null;
         }
@@ -124,13 +44,9 @@ const Features = () => {
 
     return (
         <div className="features-page">
+            {/* Left Sidebar */}
             <div className="sidebar">
                 <ul>
-                    {/* <li><LuFiles /></li>
-                    <li><VscRunAll /></li>
-                    <li><HiChatBubbleLeftRight /> </li>
-                    <li><FcCollaboration /></li>
-                    <li><IoSettingsOutline /></li> */}
                     <li onClick={() => setSelectedFeature('editor')}><LuFiles /></li>
                     <li onClick={() => setSelectedFeature('runner')}><VscRunAll /></li>
                     <li onClick={() => setSelectedFeature('chat')}><HiChatBubbleLeftRight /></li>
@@ -138,8 +54,20 @@ const Features = () => {
                     <li onClick={() => setSelectedFeature('settings')}><IoSettingsOutline /></li>
                 </ul>
             </div>
+
+            {/* Right Content Area */}
             <div className="content">
-                {renderFeatureContent()}
+                <div className="feature-content">
+                    {/* Left-side feature content (files, runner, chat, etc.) */}
+                    <div className="feature-details">
+                        {renderFeatureContent()}
+                    </div>
+
+                    {/* Right-side editor (common for all features) */}
+                    <div className="editor">
+                        <Editor value={editorContent} />
+                    </div>
+                </div>
             </div>
         </div>
     );

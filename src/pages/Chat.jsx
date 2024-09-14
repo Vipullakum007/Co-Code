@@ -1,103 +1,67 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
 import './FeaturesPage.css';
 import { LuSendHorizonal } from "react-icons/lu";
 import { useAuth } from '../store/auth';
-import Editor from './Editor';
-
-const socket = io('http://localhost:5000');
+import { useSocket } from '../context/SocketProvider'; // Use the socket from context
 
 const Chat = ({ roomId }) => {
-
     const { user } = useAuth();
+    const { socket, joinRoom } = useSocket();
     const [text, setText] = useState('');
-    // const [messageReceived, setMessageReceived] = useState("");
-    // socket.on("receiveMessage", (data) => {
-    //     setMessageReceived(data.message);
-    // })
-
     const [messages, setMessages] = useState([]);
 
-    // useEffect(() => {
-    //     socket.on('receiveMessage', (data) => {
-    //         setMessages((prevMessages) => [...prevMessages, data]);
-    //     });
-
-    //     return () => {
-    //         socket.off('receiveMessage');
-    //     };
-    // }, []);
+    const [hasJoinedRoom, setHasJoinedRoom] = useState(false); 
 
     useEffect(() => {
-        // Join the room
-        socket.emit('joinRoom', { roomId });
+        if (!socket || !roomId) return;
 
-        // Listen for messages from the room
+        const username = localStorage.getItem('username'); // Adjust according to your actual source of username
+
+        if (!hasJoinedRoom) {
+            joinRoom(roomId);
+            console.log(hasJoinedRoom);
+            setHasJoinedRoom(true); 
+            console.log(hasJoinedRoom);
+            socket.emit('joinRoom', { username, roomId });
+        }
+
         socket.on('receiveMessage', (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
         });
 
         return () => {
-            // Leave the room and clean up listeners
-            socket.emit('leaveRoom', { roomId });
             socket.off('receiveMessage');
         };
-    }, [roomId]);
+    }, [roomId, socket, joinRoom, hasJoinedRoom]);
 
     const sendMessage = () => {
-        console.log(roomId);
         const username = localStorage.getItem('username');
-        const message = { username: username, text: text, roomId };
-
+        const message = { username, text, roomId };
         socket.emit('sendMessage', message);
         setText('');
     };
-    // const sendMessage =  () => {
 
-    //     const username = localStorage.getItem('username');
-
-    //     socket.emit('sendMessage', { username: username, text: text });
-
-
-    // };
-    socket.on('forwardMessage', (data) => {
-        socket.disconnect();
-        console.log(data)
-    })
     return (
-        <div className="feature-content">
-            <div className="chat-container">
-                <h2>Group Chat</h2>
-                <h3>{user.username}</h3>
-                <hr />
-                <div className="chat-block">
-                    {messages.map((msg, index) => (
-                        <div key={index}>
-                            <strong>{msg.username}</strong>: {msg.text}
-                        </div>
-                    ))}
-                    {/* {messages.map((msg, index) => ( */}
-                    {/* <div key={index}> */}
-                    {/* <strong>{messages.username}</strong> {messages.text} */}
-                    {/* {messageReceived} */}
-                    {/* </div> */}
-                    {/* ))} */}
-                </div>
-                <div className="message-input">
-                    <input
-                        type="text"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        placeholder="Enter your message..."
-                        autoFocus
-                    />
-                    <LuSendHorizonal onClick={sendMessage} />
-                    {/* <button onClick={sendMessage}>Send</button> */}
-                </div>
+        <div className="chat-container">
+            <h2>Group Chat</h2>
+            {/* <h3>{user.username}</h3>                                 */}
+            <hr />
+            <div className="chat-block">
+                {messages.map((msg, index) => (
+                    <div key={index}>
+                        <strong>{msg.username}</strong>: {msg.text}
+                    </div>
+                ))}
             </div>
-            <div className="editor">
-
-                <Editor />
+            <div className="message-input">
+                <input
+                    type="text"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Enter your message..."
+                    autoFocus
+                />
+                <LuSendHorizonal onClick={sendMessage} />
             </div>
         </div>
     );

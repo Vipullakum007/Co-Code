@@ -25,26 +25,142 @@ const io = new Server(server, {
 });
 
 // const username = localStorage.getItem('username');
-io.on('connection', (socket) => {
-    console.log( ' a user connected' , socket.id);
+// io.on('connection', (socket) => {
+//     console.log( ' a user connected' , socket.id);
 
-    socket.on('joinRoom', ({ roomId }) => {
+//     socket.on('joinRoom', ({ roomId }) => {
+//         socket.join(roomId);
+//         console.log(`User joined room: ${roomId}`);
+//     });
+//     socket.on('leaveRoom', ({ roomId }) => {
+//         socket.leave(roomId);
+//         console.log(`User left room: ${roomId}`);
+//     });
+//     socket.on('sendMessage', ({ username, text, roomId }) => {
+//         console.log(username,text);
+//         io.to(roomId).emit('receiveMessage',{username, text});
+//     });
+
+//     socket.on('disconnection', () => {
+//         console.log('user disconnected');
+//     });
+// });
+
+// = = = = = version 2
+const rooms = {}; // Object to store roomId => array of collaborators
+
+io.on('connection', (socket) => {
+    console.log('Connection established', socket.id);
+
+    // Handle user joining a room
+    socket.on('joinRoom', ({ username, roomId }) => {
+        console.log(username, 'joined', roomId);
+
+        socket.username = username;  // Store username in the socket
+        socket.roomId = roomId;      // Store roomId in the socket
         socket.join(roomId);
-        console.log(`User joined room: ${roomId}`);
+
+        if (!rooms[roomId]) {
+            rooms[roomId] = []; // Create room if it doesn't exist
+        }
+
+        const roomCollaborators = rooms[roomId];
+
+        if (!roomCollaborators.includes(username)) {
+            roomCollaborators.push(username);
+        }
+
+        console.log('collaborators updating:', roomCollaborators);
+        io.in(roomId).emit('collaboratorsUpdate', roomCollaborators);
     });
-    socket.on('leaveRoom', ({ roomId }) => {
+
+    // Handle user leaving a room
+    socket.on('leaveRoom', ({ username, roomId }) => {
         socket.leave(roomId);
-        console.log(`User left room: ${roomId}`);
+
+        if (rooms[roomId]) {
+            rooms[roomId] = rooms[roomId].filter(user => user !== username);
+            io.in(roomId).emit('collaboratorsUpdate', rooms[roomId]);
+        }
     });
+
+    // Handle sending messages
     socket.on('sendMessage', ({ username, text, roomId }) => {
-        console.log(username,text);
-        io.to(roomId).emit('receiveMessage',{username, text});
+        console.log(username, text);
+        io.to(roomId).emit('receiveMessage', { username, text });
     });
-    
-    socket.on('disconnection', () => {
-        console.log('user disconnected');
+
+    // Handle user disconnecting
+    socket.on('disconnect', () => {
+        const { username, roomId } = socket;
+
+        if (roomId && rooms[roomId]) {
+            rooms[roomId] = rooms[roomId].filter(user => user !== username);
+            io.in(roomId).emit('collaboratorsUpdate', rooms[roomId]);
+        }
     });
 });
+
+
+// = = = = = version 3
+
+//const rooms = new Map();
+/*
+io.on('connection', (socket) => {
+    console.log('Connection established', socket.id);
+
+    socket.on('joinRoom', ({ username, roomId }) => {
+        console.log(username, "joined ", roomId);
+        socket.username = username;  // Store the username on the socket
+        socket.roomId = roomId;      // Optionally store the roomId too
+        socket.join(roomId);
+
+        if (!rooms.has(roomId)) {
+            rooms.set(roomId, []);
+        }
+
+        const roomCollaborators = rooms.get(roomId);
+
+        if (!roomCollaborators.includes(username)) {
+            roomCollaborators.push(username);
+        }
+        console.log('collaborators updating: ', roomCollaborators);
+        io.in(roomId).emit('collaboratorsUpdate', roomCollaborators);
+    });
+
+    socket.on('leaveRoom', ({ username, roomId }) => {
+        socket.leave(roomId);
+
+        const roomCollaborators = rooms.get(roomId);
+
+        if (roomCollaborators) {
+            rooms.set(roomId, roomCollaborators.filter((user) => user !== username));
+
+            io.in(roomId).emit('collaboratorsUpdate', rooms.get(roomId));
+        }
+    });
+
+    socket.on('sendMessage', ({ username, text, roomId }) => {
+        console.log(username, text);
+        io.to(roomId).emit('receiveMessage', { username, text });
+    });
+
+    socket.on('disconnect', () => {
+        const { username, roomId } = socket;
+
+        if (roomId && username) {
+            const roomCollaborators = rooms.get(roomId);
+
+            if (roomCollaborators) {
+                const updatedCollaborators = roomCollaborators.filter((user) => user !== username);
+                rooms.set(roomId, updatedCollaborators);
+
+                io.in(roomId).emit('collaboratorsUpdate', updatedCollaborators);
+            }
+        }
+    });
+});
+*/
 
 
 // APIs

@@ -20,6 +20,11 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/features" element={<Features />} />
+        <Route path="/features/chat" element={<Features />} />
+        <Route path="/features/editor" element={<Features />} />
+        <Route path="/features/runner" element={<Features />} />
+        <Route path="/features/collaborators" element={<Features />} />
+        <Route path="/features/setting" element={<Features />} />
         <Route path="/logout" element={<Logout />} />
       </Routes>
       <Footer />

@@ -1,86 +1,89 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useSocket } from "../context/SocketProvider";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-
    const [token, setToken] = useState(localStorage.getItem("token"));
    const [user, setUser] = useState("");
    const [isLoading, setIsLoading] = useState(true);
-   const authorizationToken = `Bearer ${token}`;
+   const socket = localStorage.getItem("socket");
+   const authorizationToken = token ? `Bearer ${token}` : null;
 
+   // Store token in local storage
    const storeTokenInLS = (serverToken) => {
       setToken(serverToken);
-      return localStorage.setItem("token", serverToken);
+      localStorage.setItem("token", serverToken);
    };
 
-   // const storeUsernameInLS = (userData) => {
-   //    setUser(userData.username);
-   //    localStorage.setItem("username", JSON.stringify(userData.username));
-   // };
-
-   // lets tack logout functionality
-   let isLoggedIn = !!token;
-   console.log("isLoggedIn = ", isLoggedIn);
-
+   // Logout functionality
    const LogoutUser = () => {
+      if (!socket) {
+         console.error('Socket is not available.');
+         return;
+      }
+
+      const roomId = localStorage.getItem('roomId');
+      const username = localStorage.getItem('username');
+
+      if (socket && roomId && username) {
+         socket.emit('leaveRoom', { username, roomId });
+      }
+
+      // Clear token and user
       setToken("");
       setUser("");
       localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      localStorage.removeItem("userid");
+      localStorage.removeItem("username");
    };
 
    // JWT AUTHENTICATION - to get currently logged in user
    const userAuthentication = async () => {
       try {
          setIsLoading(true);
-         // console.log(authorizationToken);
          const response = await fetch("http://localhost:5000/api/auth/user", {
             method: "GET",
             headers: {
                Authorization: authorizationToken,
             },
          });
+
          if (response.ok) {
             const data = await response.json();
-            console.log("user data : ", data.userData);
             setUser(data.userData);
-            setIsLoading(false);
-         }
-         else {
+         } else {
             console.log("Error fetching user data");
-            setIsLoading(false);
          }
       } catch (error) {
-         console.error("error in fetching user data");
+         console.error("Error in fetching user data", error);
+      } finally {
+         setIsLoading(false);
       }
-
    };
+
    useEffect(() => {
-      userAuthentication();
-   }, []);
-   // useEffect(() => {
-   //    if (token) {
-   //       userAuthentication();
-   //    } else {
-   //       setIsLoading(false);
-   //    }
-   // }, [token]);
+      if (token) {
+         userAuthentication();
+      } else {
+         setIsLoading(false);
+      }
+   }, [token]);
 
-
-
-   return <AuthContext.Provider value={{ isLoggedIn, storeTokenInLS, LogoutUser, user, authorizationToken, isLoading }}>
-      {children}
-   </AuthContext.Provider>
+   return (
+      <AuthContext.Provider
+         value={{ isLoggedIn: !!token, storeTokenInLS, LogoutUser, user, authorizationToken, isLoading }}
+      >
+         {children}
+      </AuthContext.Provider>
+   );
 };
 
-// custome react HOOK
-
-// useAuth function now contains tha value provided by AuthContext.provider higher up in component tree
+// Custom React hook to access AuthContext
 export const useAuth = () => {
    const AuthContextValue = useContext(AuthContext);
    if (!AuthContextValue) {
-      throw new Error("useAuth used outside of the Provider");
+      throw new Error("useAuth must be used within an AuthProvider");
    }
    return AuthContextValue;
-}
+};

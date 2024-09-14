@@ -5,12 +5,16 @@ import { AuthProvider } from './store/auth.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChatProvider from './context/chatContext.jsx';
+import { SocketProvider } from './context/SocketProvider.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <AuthProvider >
-    {/* <ChatProvider > */}
-      <React.StrictMode>
+  <React.StrictMode>
+
+    <SocketProvider >
+      <AuthProvider >
+
+        {/* <ChatProvider > */}
         <App />
 
         <ToastContainer
@@ -27,8 +31,10 @@ root.render(
           // transition:Bounce
           bodyClassName="toastBody"
         />
-      </React.StrictMode>
-    {/* </ChatProvider> */}
-  </AuthProvider>
+        {/* </ChatProvider> */}
+      </AuthProvider>
+    </SocketProvider>
+  </React.StrictMode>
+
 );
 

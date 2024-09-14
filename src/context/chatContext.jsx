@@ -1,11 +1,32 @@
-import React, { createContext, useEffect, useState, useContext } from "react";
-// import io from 'socket.io';
-// import {useAuth } from '../store/auth'
+// import React, { createContext, useContext, useState, useCallback } from 'react';
+// import { ChatContextType, ChatMessage } from "../types/chatTypes";
 
-export const ChatContext = createContext();
+// const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-export const ChatProvider = ({ children }) => {
+// // Custom hook to use the ChatContext
+// export const useChat = () => {
+//     const context = useContext(ChatContext);
+//     if (context === undefined) {
+//         throw new Error("useChat must be used within a ChatProvider");
+//     }
+//     return context;
+// };
 
-        
-};
-export default ChatProvider;
+// // Provider component to manage chat state
+// export const ChatProvider = ({ children }) => {
+//     const [messages, setMessages] = useState([]);
+
+//     const addMessage = useCallback((message) => {
+//         setMessages((prevMessages) => [...prevMessages, message]);
+//     }, []);
+
+//     const clearMessages = useCallback(() => {
+//         setMessages([]);
+//     }, []);
+
+//     return (
+//         <ChatContext.Provider value={{ messages, addMessage, clearMessages }}>
+//             {children}
+//         </ChatContext.Provider>
+//     );
+// };

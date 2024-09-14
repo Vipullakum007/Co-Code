@@ -5,6 +5,7 @@ import CodeMirror, {
 } from "@uiw/react-codemirror"
 
 import React from 'react'
+import PropTypes from 'prop-types';
 
 function Editor() {
     // const [extensions, setExtensions] = useState<Extension[]>([]);
@@ -16,6 +17,7 @@ function Editor() {
             // onChange={onCodeChange}
             // value={activeFile?.content}
             // extensions={extensions}
+            value="print('Hello, world!')"
             minHeight="100%"
             maxWidth="100vw"
             style={{
@@ -26,5 +28,9 @@ function Editor() {
         />
     )
 }
+
+Editor.propTypes = {
+    value: PropTypes.string.isRequired,
+};
 
 export default Editor
